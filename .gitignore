@@ -1,0 +1,12 @@
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Build
+bin/
+obj/
+
+# macOS
+.DS_Store
