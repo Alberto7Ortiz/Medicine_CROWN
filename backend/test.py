@@ -1,8 +1,17 @@
-from services.system_service import SystemService
+from services.gpio_service import GpioService
 
 
-service = SystemService()
+def main():
+    gpio = GpioService()
 
-status = service.get_system_status()
+    print("Desactivando Carrier...")
+    gpio.carrier_disable()
 
-print(status)
+    print("Desactivando Auto Carrier...")
+    gpio.auto_carrier_disable()
+
+    print("Estado FAIL:", gpio.is_fail_active())
+
+
+if __name__ == "__main__":
+    main()
