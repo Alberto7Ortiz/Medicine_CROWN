@@ -3,56 +3,62 @@ from hardware.gpio.gpio_controller import GpioController
 
 class GpioService:
     """
-    Servicio para gestionar las operaciones GPIO.
-    Actúa como intermediario entre la API y el controlador de hardware.
+    Servicio de gestión GPIO.
     """
 
+
     def __init__(self):
+
         self._gpio = GpioController()
 
-    # ==========================
-    # Carrier
-    # ==========================
+
+
+    # ==================================
+    # CARRIER
+    # ==================================
 
     def carrier_enable(self):
-        """
-        Activa la salida Carrier.
-        """
         self._gpio.carrier_enable()
 
+
     def carrier_disable(self):
-        """
-        Desactiva la salida Carrier.
-        """
         self._gpio.carrier_disable()
 
-    # ==========================
-    # Auto Carrier
-    # ==========================
+
+    def get_carrier_status(self):
+        return self._gpio.get_carrier_status()
+
+
+
+    # ==================================
+    # AUTO CARRIER
+    # ==================================
 
     def auto_carrier_enable(self):
-        """
-        Activa la salida Auto Carrier.
-        """
         self._gpio.auto_carrier_enable()
 
+
     def auto_carrier_disable(self):
-        """
-        Desactiva la salida Auto Carrier.
-        """
         self._gpio.auto_carrier_disable()
 
-    # ==========================
-    # Entradas
-    # ==========================
 
-    def is_fail_active(self) -> bool:
-        """
-        Retorna el estado de la entrada FAIL.
+    def get_auto_carrier_status(self):
+        return self._gpio.get_auto_carrier_status()
 
-        Returns:
-            bool:
-                True  -> Existe una falla.
-                False -> Sistema normal.
-        """
+
+
+    # ==================================
+    # INPUT FAIL
+    # ==================================
+
+    def is_fail_active(self):
         return self._gpio.is_fail_active()
+
+
+
+    # ==================================
+    # CLEANUP
+    # ==================================
+
+    def cleanup(self):
+        self._gpio.cleanup()

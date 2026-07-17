@@ -12,27 +12,41 @@ class GpioController:
 
         GPIO.setmode(GPIO.BCM)
 
-        # Carrier
+        # ==========================
+        # OUTPUTS
+        # ==========================
+
+        # Carrier inicia LOW
         GPIO.setup(
             Pins.CARRIER,
             GPIO.OUT,
             initial=GPIO.LOW
         )
 
-        # Auto Carrier
+        # AutoCarrier inicia HIGH
         GPIO.setup(
             Pins.AUTO_CARRIER,
             GPIO.OUT,
             initial=GPIO.HIGH
         )
 
-        # Fail con resistencia pull-up interna
+
+        # ==========================
+        # INPUTS
+        # ==========================
+
+        # Fail con pull-up interno
+        # Señal activa en LOW
         GPIO.setup(
             Pins.FAIL,
             GPIO.IN,
             pull_up_down=GPIO.PUD_UP
         )
 
+
+    # ==================================
+    # CARRIER
+    # ==================================
 
     def carrier_enable(self):
         """
@@ -54,6 +68,24 @@ class GpioController:
         )
 
 
+    def get_carrier_status(self):
+        """
+        Estado actual Carrier.
+
+        True  -> HIGH
+        False -> LOW
+        """
+
+        return GPIO.input(
+            Pins.CARRIER
+        ) == GPIO.HIGH
+
+
+
+    # ==================================
+    # AUTO CARRIER
+    # ==================================
+
     def auto_carrier_enable(self):
         """
         Activa AutoCarrier.
@@ -74,15 +106,45 @@ class GpioController:
         )
 
 
+    def get_auto_carrier_status(self):
+        """
+        Estado actual AutoCarrier.
+
+        True  -> HIGH
+        False -> LOW
+        """
+
+        return GPIO.input(
+            Pins.AUTO_CARRIER
+        ) == GPIO.HIGH
+
+
+
+    # ==================================
+    # FAIL INPUT
+    # ==================================
+
     def is_fail_active(self):
         """
-        La entrada FAIL es activa en LOW.
-        """
-        return GPIO.input(Pins.FAIL) == GPIO.LOW
+        FAIL activa en LOW.
 
+        True  -> Existe falla
+        False -> Sistema normal
+        """
+
+        return GPIO.input(
+            Pins.FAIL
+        ) == GPIO.LOW
+
+
+
+    # ==================================
+    # CLEANUP
+    # ==================================
 
     def cleanup(self):
         """
         Libera GPIO.
         """
+
         GPIO.cleanup()
