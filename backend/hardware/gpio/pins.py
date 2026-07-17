@@ -12,3 +12,8 @@ class Pins:
 
     # Entrada
     FAIL = 23
+
+
+    # Raspberry PI ADS1256
+    DRDY = 22           
+    CS = 8 
