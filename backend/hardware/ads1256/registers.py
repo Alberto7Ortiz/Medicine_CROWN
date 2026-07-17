@@ -35,4 +35,26 @@ class  Commands:
     INI_STATUS = 0b01000111    #(0100) factory programed xxxx, (0 MSB or 1 LSB) order x, (0 auto_cal_dis or 1 auto_cal_enb) ACAL x, (0 dis or 1 enb) BUFFEN x, 1 (read only) DRDY x
     INI_MUX    = 0b00010000    #AIN1 Postive and AIN0 Negative
     INI_ADCON  = 0b00100000    # bit 7 reserved, bit 6-5 CLK(01)Fclkin/1, bit 4-2 Sensor Detect Current Source (00) off, Bits 2-0 Programable Gain Amplifier Setting (000) = 1 
-    INI_DRATE  = 0b00000010    #100 SPS 
+    INI_DRATE  = 0b00100011    #        10 SPS 
+
+"""
+| SPS (muestras/segundo) | Valor binario | Hex    |
+| ---------------------- | ------------- | ------ |
+| 30000 SPS              | `11110000`    | `0xF0` |
+| 15000 SPS              | `11100000`    | `0xE0` |
+| 7500 SPS               | `11010000`    | `0xD0` |
+| 3750 SPS               | `11000000`    | `0xC0` |
+| 2000 SPS               | `10110000`    | `0xB0` |
+| 1000 SPS               | `10100001`    | `0xA1` |
+| 500 SPS                | `10010010`    | `0x92` |
+| 100 SPS                | `10000010`    | `0x82` |
+| 60 SPS                 | `01110010`    | `0x72` |
+| 50 SPS                 | `01100011`    | `0x63` |
+| 30 SPS                 | `01010011`    | `0x53` |
+| 25 SPS                 | `01000011`    | `0x43` |
+| 15 SPS                 | `00110011`    | `0x33` |
+| 10 SPS                 | `00100011`    | `0x23` |
+| 5 SPS                  | `00010011`    | `0x13` |
+| 2.5 SPS                | `00000011`    | `0x03` |
+
+"""           
