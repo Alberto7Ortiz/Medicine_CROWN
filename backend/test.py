@@ -16,13 +16,13 @@ def main():
         print("------------------------")
 
         canales = [
-            0x08,  # AIN0
-            0x18,  # AIN1
-            0x28,  # AIN2
-            0x38,  # AIN3
-            0x48,  # AIN4
-            0x58,  # AIN5
-            0x68   # AIN6
+            0x10,  # AIN1
+            0x20,  # AIN2
+            0x30,  # AIN3
+            0x40,  # AIN4
+            0x50,  # AIN5
+            0x60,  # AIN6
+            0x70   # AIN7
         ]
 
         while True:
