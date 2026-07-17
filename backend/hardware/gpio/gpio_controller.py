@@ -1,4 +1,4 @@
-from gpiozero import DigitalOutputDevice, DigitalInputDevice
+import RPi.GPIO as GPIO
 
 from hardware.gpio.pins import Pins
 
@@ -10,22 +10,27 @@ class GpioController:
 
     def __init__(self):
 
-        # Carrier inicia LOW
-        self.carrier = DigitalOutputDevice(
+        GPIO.setmode(GPIO.BCM)
+
+        # Carrier
+        GPIO.setup(
             Pins.CARRIER,
-            initial_value=False
+            GPIO.OUT,
+            initial=GPIO.LOW
         )
 
-        # AutoCarrier inicia HIGH
-        self.auto_carrier = DigitalOutputDevice(
+        # Auto Carrier
+        GPIO.setup(
             Pins.AUTO_CARRIER,
-            initial_value=True
+            GPIO.OUT,
+            initial=GPIO.HIGH
         )
 
-        # Fail utiliza pull-up interno de Raspberry
-        self.fail = DigitalInputDevice(
+        # Fail con resistencia pull-up interna
+        GPIO.setup(
             Pins.FAIL,
-            pull_up=True
+            GPIO.IN,
+            pull_up_down=GPIO.PUD_UP
         )
 
 
@@ -33,40 +38,51 @@ class GpioController:
         """
         Activa Carrier.
         """
-
-        self.carrier.on()
+        GPIO.output(
+            Pins.CARRIER,
+            GPIO.HIGH
+        )
 
 
     def carrier_disable(self):
         """
         Desactiva Carrier.
         """
-
-        self.carrier.off()
+        GPIO.output(
+            Pins.CARRIER,
+            GPIO.LOW
+        )
 
 
     def auto_carrier_enable(self):
         """
         Activa AutoCarrier.
         """
-
-        self.auto_carrier.on()
+        GPIO.output(
+            Pins.AUTO_CARRIER,
+            GPIO.HIGH
+        )
 
 
     def auto_carrier_disable(self):
         """
         Desactiva AutoCarrier.
         """
-
-        self.auto_carrier.off()
+        GPIO.output(
+            Pins.AUTO_CARRIER,
+            GPIO.LOW
+        )
 
 
     def is_fail_active(self):
         """
-        True  -> existe falla
-        False -> sistema normal
-
-        La señal es activa en LOW.
+        La entrada FAIL es activa en LOW.
         """
+        return GPIO.input(Pins.FAIL) == GPIO.LOW
 
-        return not self.fail.value
+
+    def cleanup(self):
+        """
+        Libera GPIO.
+        """
+        GPIO.cleanup()
