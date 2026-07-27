@@ -336,10 +336,3 @@ class Alarm(Base):
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
-    )
-
-
-    station = relationship(
-        "Station",
-        back_populates="alarms"
-    )
