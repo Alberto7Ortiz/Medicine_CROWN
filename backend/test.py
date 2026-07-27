@@ -1,53 +1,145 @@
 import time
 
+
 from hardware.ads1256.driver import ADS1256Controller
+
+from services.gpio_service import GpioService
+
+from services.acquisition_service import AcquisitionService
+
+from database.repository import Repository
+
 
 
 def main():
 
+
+    print("================================")
+    print(" TEST ACQUISITION SERVICE")
+    print("================================")
+
+
+    # -------------------------------
+    # Hardware
+    # -------------------------------
+
     adc = ADS1256Controller()
 
+
+    gpio = GpioService()
+
+
+
+    # -------------------------------
+    # Database
+    # -------------------------------
+
+    repository = Repository()
+
+
+
+    # Verificar parámetros
+
+    parameters = repository.get_parameters()
+
+
+    print("\nParametros cargados:")
+
+    for parameter in parameters:
+
+        print(
+            parameter.name,
+            hex(parameter.channel)
+        )
+
+
+    # -------------------------------
+    # Servicio lectura
+    # -------------------------------
+
+    acquisition = AcquisitionService(
+
+        adc_controller=adc,
+
+        gpio_service=gpio,
+
+        repository=repository
+
+    )
+
+
+
     try:
-        print("Inicializando ADS1256...")
 
-        adc.initialize()
 
-        print("ADS1256 inicializado")
-        print("------------------------")
+        acquisition.start()
 
-        canales = [
-            0x10,  # AIN1
-            0x20,  # AIN2
-            0x30,  # AIN3
-            0x40,  # AIN4
-            0x50,  # AIN5
-            0x60,  # AIN6
-            0x70   # AIN7
-        ]
+
+        print("\nAdquisicion iniciada...")
+
 
         while True:
 
-            for i, canal in enumerate(canales):
 
-                adc.channel(canal)
+            measurement = (
+                acquisition.get_last()
+            )
 
-                valor = adc.read()
+
+            if measurement:
+
+
+                print("\n==============================")
 
                 print(
-                    f"Canal {i}: {valor}"
+                    "Timestamp:"
                 )
 
-                time.sleep(0.2)
+                print(
+                    measurement["timestamp"]
+                )
 
-            print("------------------------")
+
+                print("\nANALOG")
+
+
+                for name, data in measurement["analog"].items():
+
+
+                    print(
+                        name,
+                        data
+                    )
+
+
+                print("\nDIGITAL")
+
+
+                print(
+                    measurement["digital"]
+                )
+
+
+
+            time.sleep(2)
+
 
 
     except KeyboardInterrupt:
-        print("Test finalizado")
+
+
+        print("\nDeteniendo...")
+
 
     finally:
-        adc.close()
+
+
+        acquisition.stop()
+
+        gpio.cleanup()
+
 
 
 if __name__ == "__main__":
+
     main()
