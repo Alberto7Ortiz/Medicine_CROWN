@@ -1,38 +1,42 @@
-from database.database import Base, engine
-from database.models import Station, Parameter
-from database.database import get_session
+from database.database import Base, engine, get_session
+
+from database.models import (
+    Station,
+    Parameter
+)
 
 
 
 def initialize_database():
 
-
-    # Crear tablas
+    print("Creating tables...")
 
     Base.metadata.create_all(
         engine
     )
+
+    print("Tables created")
 
 
     session = get_session()
 
 
 
-    # -------------------------------
-    # Crear estación
-    # -------------------------------
+    # ==================================
+    # Create Station
+    # ==================================
 
     station = Station(
 
-        name="",
-
         callsign="",
+
+        name="Medicion Crown",
 
         location="",
 
-        frequency=0,
+        frequency=0.0,
 
-        tpo=0,
+        tpo=0.0,
 
         timezone="",
 
@@ -46,13 +50,15 @@ def initialize_database():
     session.commit()
 
 
+    print("Station created")
 
-    # -------------------------------
-    # Crear parámetros
-    # -------------------------------
+
+
+    # ==================================
+    # ADS1256 Parameters
+    # ==================================
 
     parameters = [
-
 
         {
             "name": "rf_power",
@@ -61,14 +67,12 @@ def initialize_database():
             "unit": "W"
         },
 
-
         {
             "name": "swr",
             "display_name": "SWR",
             "channel": 0x20,
             "unit": ""
         },
-
 
         {
             "name": "alc",
@@ -77,14 +81,12 @@ def initialize_database():
             "unit": "%"
         },
 
-
         {
             "name": "pa_dc_volts",
             "display_name": "PA DC Volts",
             "channel": 0x40,
             "unit": "V"
         },
-
 
         {
             "name": "pa_dc_amps",
@@ -93,14 +95,12 @@ def initialize_database():
             "unit": "A"
         },
 
-
         {
             "name": "pa_temperature",
             "display_name": "PA Temperature",
             "channel": 0x60,
-            "unit": "°C"
+            "unit": "C"
         },
-
 
         {
             "name": "supply_dc_volts",
@@ -120,7 +120,6 @@ def initialize_database():
 
             station_id=station.id,
 
-
             name=item["name"],
 
             display_name=item["display_name"],
@@ -135,21 +134,17 @@ def initialize_database():
             offset=0.0,
 
 
-            nominal_value=0,
+            ideal_value=0.0,
 
 
-            warning_low=0,
+            warning_low=None,
 
-            warning_high=0,
-
-
-            alarm_low=0,
-
-            alarm_high=0,
+            warning_high=None,
 
 
-            configured=False
+            alarm_low=None,
 
+            alarm_high=None
 
         )
 
@@ -161,7 +156,13 @@ def initialize_database():
     session.commit()
 
 
+    print("Parameters created")
+
+
     session.close()
+
+
+    print("Database initialization completed")
 
 
 
