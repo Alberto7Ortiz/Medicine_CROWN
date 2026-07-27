@@ -78,6 +78,15 @@ class Station(Base):
     )
 
 
+    # Relaciones
+
+    antenna = relationship(
+        "AntennaSystem",
+        back_populates="station",
+        uselist=False
+    )
+
+
     parameters = relationship(
         "Parameter",
         back_populates="station"
@@ -93,6 +102,72 @@ class Station(Base):
     alarms = relationship(
         "Alarm",
         back_populates="station"
+    )
+
+
+
+# ==================================
+# Antenna System
+# ==================================
+
+class AntennaSystem(Base):
+
+    __tablename__ = "antenna_system"
+
+
+    id = Column(
+        Integer,
+        primary_key=True
+    )
+
+
+    station_id = Column(
+        Integer,
+        ForeignKey("station.id")
+    )
+
+
+    tower_height = Column(
+        Float
+    )
+
+
+    antenna_type = Column(
+        String
+    )
+
+
+    antenna_height = Column(
+        Float
+    )
+
+
+    antenna_azimuth = Column(
+        Float
+    )
+
+
+    antenna_quantity = Column(
+        Integer
+    )
+
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+
+    station = relationship(
+        "Station",
+        back_populates="antenna"
     )
 
 
@@ -130,6 +205,7 @@ class Parameter(Base):
 
 
     # ADS1256 channel
+
     channel = Column(
         Integer
     )
@@ -141,6 +217,7 @@ class Parameter(Base):
 
 
     # ADC conversion
+
     gain = Column(
         Float,
         default=1.0
@@ -159,6 +236,7 @@ class Parameter(Base):
 
 
     # Warning limits
+
     warning_low = Column(
         Float,
         nullable=True
@@ -172,6 +250,7 @@ class Parameter(Base):
 
 
     # Alarm limits
+
     alarm_low = Column(
         Float,
         nullable=True
@@ -266,6 +345,12 @@ class Measurement(Base):
     )
 
 
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+
     station = relationship(
         "Station",
         back_populates="measurements"
@@ -305,6 +390,41 @@ class Alarm(Base):
     )
 
 
+    rf_power = Column(
+        Float
+    )
+
+
+    swr = Column(
+        Float
+    )
+
+
+    alc = Column(
+        Float
+    )
+
+
+    pa_dc_volts = Column(
+        Float
+    )
+
+
+    pa_dc_amps = Column(
+        Float
+    )
+
+
+    pa_temperature = Column(
+        Float
+    )
+
+
+    supply_dc_volts = Column(
+        Float
+    )
+
+
     alarm_source = Column(
         String
     )
@@ -326,6 +446,18 @@ class Alarm(Base):
     # ACTIVE / CLEARED
 
 
+    notification_sent = Column(
+        Integer,
+        default=0
+    )
+
+
+    recovery_sent = Column(
+        Integer,
+        default=0
+    )
+
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow
@@ -336,3 +468,10 @@ class Alarm(Base):
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow
+    )
+
+
+    station = relationship(
+        "Station",
+        back_populates="alarms"
+    )

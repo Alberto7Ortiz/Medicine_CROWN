@@ -2,6 +2,7 @@ from database.database import Base, engine, get_session
 
 from database.models import (
     Station,
+    AntennaSystem,
     Parameter
 )
 
@@ -11,9 +12,11 @@ def initialize_database():
 
     print("Creating tables...")
 
+
     Base.metadata.create_all(
         engine
     )
+
 
     print("Tables created")
 
@@ -23,34 +26,96 @@ def initialize_database():
 
 
     # ==================================
-    # Create Station
+    # Check existing station
     # ==================================
 
-    station = Station(
-
-        callsign="",
-
-        name="Medicion Crown",
-
-        location="",
-
-        frequency=0.0,
-
-        tpo=0.0,
-
-        timezone="",
-
-        description=""
-
+    station = (
+        session.query(Station)
+        .first()
     )
 
 
-    session.add(station)
-
-    session.commit()
+    if station is None:
 
 
-    print("Station created")
+        # ==================================
+        # Create Station
+        # ==================================
+
+        station = Station(
+
+            callsign="",
+
+            name="Medicion Crown",
+
+            location="",
+
+            frequency=0.0,
+
+            tpo=0.0,
+
+            timezone="",
+
+            description=""
+
+        )
+
+
+        session.add(station)
+
+        session.commit()
+
+
+        print("Station created")
+
+
+    else:
+
+        print("Station already exists")
+
+
+
+    # ==================================
+    # Create Antenna System
+    # ==================================
+
+    antenna = (
+        session.query(AntennaSystem)
+        .first()
+    )
+
+
+    if antenna is None:
+
+
+        antenna = AntennaSystem(
+
+            station_id=station.id,
+
+            tower_height=0.0,
+
+            antenna_type="",
+
+            antenna_height=0.0,
+
+            antenna_azimuth=0.0,
+
+            antenna_quantity=0
+
+        )
+
+
+        session.add(antenna)
+
+        session.commit()
+
+
+        print("Antenna system created")
+
+
+    else:
+
+        print("Antenna system already exists")
 
 
 
@@ -116,47 +181,55 @@ def initialize_database():
     for item in parameters:
 
 
-        parameter = Parameter(
-
-            station_id=station.id,
-
-            name=item["name"],
-
-            display_name=item["display_name"],
-
-            channel=item["channel"],
-
-            unit=item["unit"],
-
-
-            gain=1.0,
-
-            offset=0.0,
-
-
-            ideal_value=0.0,
-
-
-            warning_low=None,
-
-            warning_high=None,
-
-
-            alarm_low=None,
-
-            alarm_high=None
-
+        existing = (
+            session.query(Parameter)
+            .filter(
+                Parameter.name == item["name"]
+            )
+            .first()
         )
 
 
-        session.add(parameter)
+        if existing is None:
 
+
+            parameter = Parameter(
+
+                station_id=station.id,
+
+                name=item["name"],
+
+                display_name=item["display_name"],
+
+                channel=item["channel"],
+
+                unit=item["unit"],
+
+                gain=1.0,
+
+                offset=0.0,
+
+                ideal_value=0.0,
+
+                warning_low=None,
+
+                warning_high=None,
+
+                alarm_low=None,
+
+                alarm_high=None
+
+            )
+
+
+            session.add(parameter)
 
 
     session.commit()
 
 
     print("Parameters created")
+
 
 
     session.close()

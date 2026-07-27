@@ -1,156 +1,280 @@
+from datetime import datetime
+
 from database.repository import Repository
 
-from services.acquisition import AcquisitionService
+from database.database import engine
+
+from database.models import (
+    Station,
+    AntennaSystem,
+    Parameter,
+    Measurement,
+    Alarm
+)
 
 
 
-# ==================================
-# Fake ADS1256
-# ==================================
-
-class FakeADC:
+def test_database():
 
 
-    def initialize(self):
+    print("\n==============================")
+    print(" DATABASE TEST")
+    print("==============================\n")
 
-        print("ADC initialized")
-
-
-
-    def channel(self, channel):
-
-        print(
-            "Reading channel:",
-            hex(channel)
-        )
-
-
-
-    def read(self):
-
-        # Valor simulado ADC
-
-        return 1000000
-
-
-
-    def close(self):
-
-        print("ADC closed")
-
-
-
-# ==================================
-# Fake GPIO
-# ==================================
-
-class FakeGPIO:
-
-
-    def get_carrier_status(self):
-
-        return True
-
-
-
-    def get_auto_carrier_status(self):
-
-        return False
-
-
-
-    def is_fail_active(self):
-
-        return False
-
-
-
-# ==================================
-# TEST
-# ==================================
-
-def main():
-
-
-    print(
-        "\nStarting acquisition test\n"
-    )
 
 
     repository = Repository()
 
 
-    adc = FakeADC()
 
-    gpio = FakeGPIO()
+    # ==================================
+    # Test Station
+    # ==================================
+
+    print("Checking station...")
 
 
-
-    service = AcquisitionService(
-
-        adc_controller=adc,
-
-        gpio_service=gpio,
-
-        repository=repository
-
+    station = (
+        repository.get_station()
     )
+
+
+    assert station is not None, \
+        "Station not found"
+
+
+    print(
+        "Station OK:",
+        station.name
+    )
+
+
+
+    # ==================================
+    # Test Antenna
+    # ==================================
+
+    print("\nChecking antenna...")
+
+
+    antenna = (
+        repository.get_antenna()
+    )
+
+
+    assert antenna is not None, \
+        "Antenna not found"
+
+
+    print(
+        "Antenna OK"
+    )
+
+
+
+    # ==================================
+    # Test Parameters
+    # ==================================
+
+    print("\nChecking parameters...")
+
+
+    parameters = (
+        repository.get_parameters()
+    )
+
+
+    assert len(parameters) > 0, \
+        "No parameters found"
+
+
+
+    for parameter in parameters:
+
+        print(
+            " -",
+            parameter.name,
+            "channel:",
+            hex(parameter.channel)
+        )
 
 
 
     print(
-        "Starting service..."
+        "Parameters OK:",
+        len(parameters)
     )
 
 
-    service.start()
+
+    # ==================================
+    # Save Measurement
+    # ==================================
+
+    print("\nSaving measurement...")
+
+
+    measurement = {
+
+
+        "timestamp":
+            datetime.now(),
+
+
+        "analog": {
+
+
+            "rf_power": {
+                "value": 100.0
+            },
+
+
+            "swr": {
+                "value": 1.2
+            },
+
+
+            "alc": {
+                "value": 50.0
+            },
+
+
+            "pa_dc_volts": {
+                "value": 48.0
+            },
+
+
+            "pa_dc_amps": {
+                "value": 10.0
+            },
+
+
+            "pa_temperature": {
+                "value": 35.0
+            },
+
+
+            "supply_dc_volts": {
+                "value": 50.0
+            }
+
+        }
+
+    }
 
 
 
-    # Esperar algunas lecturas
-
-    import time
-
-    time.sleep(1)
-
-
-
-    measurement = (
-        service.get_last()
+    repository.save_measurement(
+        measurement
     )
 
 
     print(
-        "\nMeasurement:"
+        "Measurement saved"
     )
 
 
-    print(measurement)
+
+    # ==================================
+    # Read Measurement
+    # ==================================
+
+    print("\nReading measurements...")
+
+
+    measurements = (
+        repository.get_measurements()
+    )
+
+
+    assert len(measurements) > 0, \
+        "No measurements found"
 
 
 
-    assert measurement is not None
-
-
-
-    assert "analog" in measurement
-
-    assert "digital" in measurement
-
+    last = measurements[0]
 
 
     print(
-        "\nAcquisition test OK"
+        "Last RF Power:",
+        last.rf_power
+    )
+
+
+    print(
+        "Measurement OK"
     )
 
 
 
-    service.stop()
+    # ==================================
+    # Alarm Test
+    # ==================================
+
+    print("\nCreating alarm...")
+
+
+    alarm_data = {
+
+
+        "station_id":
+            station.id,
+
+
+        "start_time":
+            datetime.now(),
+
+
+        "alarm_source":
+            "TEST",
+
+
+        "alarm_level":
+            "WARNING",
+
+
+        "alarm_description":
+            "Database test alarm",
+
+
+        "status":
+            "ACTIVE"
+
+    }
+
+
+
+    alarm = (
+        repository.create_alarm(
+            alarm_data
+        )
+    )
+
+
+    assert alarm.id is not None
+
+
+    print(
+        "Alarm OK:",
+        alarm.id
+    )
+
+
+
+    # ==================================
+    # Close
+    # ==================================
 
     repository.close()
+
+
+    print("\n==============================")
+    print(" DATABASE TEST PASSED")
+    print("==============================\n")
+
 
 
 
 if __name__ == "__main__":
 
-    main()
+    test_database()

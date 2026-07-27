@@ -9,6 +9,7 @@ from database.models import (
 )
 
 
+
 class Repository:
 
 
@@ -17,6 +18,10 @@ class Repository:
         self.session = None
 
 
+
+    # ==================================
+    # SESSION
+    # ==================================
 
     def _get_session(self):
 
@@ -28,9 +33,9 @@ class Repository:
 
 
 
-    # ---------------------------------
-    # Station
-    # ---------------------------------
+    # ==================================
+    # STATION
+    # ==================================
 
     def get_station(self):
 
@@ -48,13 +53,12 @@ class Repository:
         station_data
     ):
 
-        session = self._get_session()
+        station = self.get_station()
 
 
-        station = (
-            session.query(Station)
-            .first()
-        )
+        if station is None:
+
+            return False
 
 
         for key, value in station_data.items():
@@ -66,18 +70,64 @@ class Repository:
             )
 
 
-        session.commit()
+        self._get_session().commit()
+
+
+        return True
 
 
 
-    # ---------------------------------
-    # Parameters
-    # ---------------------------------
+    # ==================================
+    # ANTENNA SYSTEM
+    # ==================================
+
+    def get_antenna(self):
+
+        session = self._get_session()
+
+        return (
+            session.query(AntennaSystem)
+            .first()
+        )
+
+
+
+    def update_antenna(
+        self,
+        antenna_data
+    ):
+
+        antenna = self.get_antenna()
+
+
+        if antenna is None:
+
+            return False
+
+
+        for key, value in antenna_data.items():
+
+            setattr(
+                antenna,
+                key,
+                value
+            )
+
+
+        self._get_session().commit()
+
+
+        return True
+
+
+
+    # ==================================
+    # PARAMETERS
+    # ==================================
 
     def get_parameters(self):
 
         session = self._get_session()
-
 
         return (
             session.query(Parameter)
@@ -92,7 +142,6 @@ class Repository:
     ):
 
         session = self._get_session()
-
 
         return (
             session.query(Parameter)
@@ -110,15 +159,12 @@ class Repository:
         data
     ):
 
-        parameter = (
-            self.get_parameter(name)
-        )
+        parameter = self.get_parameter(name)
 
 
         if parameter is None:
 
             return False
-
 
 
         for key, value in data.items():
@@ -137,9 +183,9 @@ class Repository:
 
 
 
-    # ---------------------------------
-    # Measurements
-    # ---------------------------------
+    # ==================================
+    # MEASUREMENTS
+    # ==================================
 
     def save_measurement(
         self,
@@ -153,48 +199,49 @@ class Repository:
 
             station_id=1,
 
+
             measured_at=
                 measurement["timestamp"],
 
 
             rf_power=
-                measurement["parameters"]
+                measurement["analog"]
                 ["rf_power"]
                 ["value"],
 
 
             swr=
-                measurement["parameters"]
+                measurement["analog"]
                 ["swr"]
                 ["value"],
 
 
             alc=
-                measurement["parameters"]
+                measurement["analog"]
                 ["alc"]
                 ["value"],
 
 
             pa_dc_volts=
-                measurement["parameters"]
+                measurement["analog"]
                 ["pa_dc_volts"]
                 ["value"],
 
 
             pa_dc_amps=
-                measurement["parameters"]
+                measurement["analog"]
                 ["pa_dc_amps"]
                 ["value"],
 
 
             pa_temperature=
-                measurement["parameters"]
+                measurement["analog"]
                 ["pa_temperature"]
                 ["value"],
 
 
             supply_dc_volts=
-                measurement["parameters"]
+                measurement["analog"]
                 ["supply_dc_volts"]
                 ["value"]
 
@@ -204,6 +251,9 @@ class Repository:
         session.add(data)
 
         session.commit()
+
+
+        return data
 
 
 
@@ -226,9 +276,9 @@ class Repository:
 
 
 
-    # ---------------------------------
-    # Alarms
-    # ---------------------------------
+    # ==================================
+    # ALARMS
+    # ==================================
 
     def create_alarm(
         self,
@@ -238,7 +288,9 @@ class Repository:
         session = self._get_session()
 
 
-        alarm = Alarm(**alarm_data)
+        alarm = Alarm(
+            **alarm_data
+        )
 
 
         session.add(alarm)
@@ -250,9 +302,7 @@ class Repository:
 
 
 
-    def get_active_alarm(
-        self
-    ):
+    def get_active_alarm(self):
 
         session = self._get_session()
 
@@ -282,9 +332,9 @@ class Repository:
 
 
 
-    # ---------------------------------
-    # Close database
-    # ---------------------------------
+    # ==================================
+    # CLOSE
+    # ==================================
 
     def close(self):
 
