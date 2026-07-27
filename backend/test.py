@@ -1,145 +1,59 @@
-import time
+from database.database import engine, Base
 
+from database.models import (
+    Station,
+    Parameter,
+    Measurement,
+    Alarm
+)
 
-from hardware.ads1256.driver import ADS1256Controller
 
-from services.gpio_service import GpioService
 
-from services.acquisition_service import AcquisitionService
+def test_database_connection():
 
-from database.repository import Repository
+    print("Testing database connection...")
 
+    print(engine)
 
+    print("Database connection OK")
 
-def main():
 
 
-    print("================================")
-    print(" TEST ACQUISITION SERVICE")
-    print("================================")
+def test_models():
 
+    print("\nTesting models...")
 
-    # -------------------------------
-    # Hardware
-    # -------------------------------
+    print(Station.__tablename__)
+    print(Parameter.__tablename__)
+    print(Measurement.__tablename__)
+    print(Alarm.__tablename__)
 
-    adc = ADS1256Controller()
+    print("Models OK")
 
 
-    gpio = GpioService()
 
+def test_metadata():
 
+    print("\nTesting SQLAlchemy metadata...")
 
-    # -------------------------------
-    # Database
-    # -------------------------------
+    tables = Base.metadata.tables.keys()
 
-    repository = Repository()
+    print("Tables detected:")
 
+    for table in tables:
+        print("-", table)
 
 
-    # Verificar parámetros
-
-    parameters = repository.get_parameters()
-
-
-    print("\nParametros cargados:")
-
-    for parameter in parameters:
-
-        print(
-            parameter.name,
-            hex(parameter.channel)
-        )
-
-
-    # -------------------------------
-    # Servicio lectura
-    # -------------------------------
-
-    acquisition = AcquisitionService(
-
-        adc_controller=adc,
-
-        gpio_service=gpio,
-
-        repository=repository
-
-    )
-
-
-
-    try:
-
-
-        acquisition.start()
-
-
-        print("\nAdquisicion iniciada...")
-
-
-        while True:
-
-
-            measurement = (
-                acquisition.get_last()
-            )
-
-
-            if measurement:
-
-
-                print("\n==============================")
-
-                print(
-                    "Timestamp:"
-                )
-
-                print(
-                    measurement["timestamp"]
-                )
-
-
-                print("\nANALOG")
-
-
-                for name, data in measurement["analog"].items():
-
-
-                    print(
-                        name,
-                        data
-                    )
-
-
-                print("\nDIGITAL")
-
-
-                print(
-                    measurement["digital"]
-                )
-
-
-
-            time.sleep(2)
-
-
-
-    except KeyboardInterrupt:
-
-
-        print("\nDeteniendo...")
-
-
-    finally:
-
-
-        acquisition.stop()
-
-        gpio.cleanup()
+    print("Metadata OK")
 
 
 
 if __name__ == "__main__":
 
-    main()
+    test_database_connection()
+
+    test_models()
+
+    test_metadata()
+
+    print("\nALL TESTS PASSED")
