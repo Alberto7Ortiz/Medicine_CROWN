@@ -1,4 +1,4 @@
-from hardware.ads1256.ads1256_controller import ADS1256Controller
+from hardware.ads1256.driver import ADS1256Controller
 
 from services.parameter_service import ParameterService
 from services.alarm_evaluator import AlarmEvaluator
@@ -38,7 +38,13 @@ class AcquisitionService:
             ACQUISITION_BUFFER_SIZE
         )
 
+    # ==================================
+    # INITIALIZE HARDWARE
+    # ==================================
 
+    def initialize(self):
+        #self._adc.__init__()
+        self._adc.initialize()
 
     # ==================================
     # CONVERSION ADC

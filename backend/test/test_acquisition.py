@@ -1,78 +1,105 @@
+#!/usr/bin/env python3
+
 import time
 
+from database.init_database import create_database
+
 from services.acquisition_service import AcquisitionService
+
 from core.acquisition_thread import AcquisitionThread
 
 
 
 def main():
 
+    print("")
     print("==============================")
-    print(" TEST ACQUISITION SERVICE")
+    print(" TEST ACQUISITION SYSTEM ")
     print("==============================")
+    print("")
 
 
-    # Crear servicio de adquisición
+    # ==================================
+    # DATABASE
+    # ==================================
+
+    print("Inicializando base de datos...")
+
+    create_database()
+
+
+
+    # ==================================
+    # ACQUISITION SERVICE
+    # ==================================
+
+    print("Creando AcquisitionService...")
 
     acquisition_service = AcquisitionService()
 
 
 
-    # Crear hilo continuo
+    # ==================================
+    # HARDWARE INITIALIZE
+    # ==================================
+
+    print("Inicializando ADS1256...")
+
+    acquisition_service.initialize()
+
+
+
+    # ==================================
+    # THREAD
+    # ==================================
+
+    print("Iniciando hilo de adquisición...")
+
 
     acquisition_thread = AcquisitionThread(
         acquisition_service,
-        interval=0.1
+        interval=1.0
     )
-
-
-
-    print("Iniciando adquisición...")
 
 
     acquisition_thread.start()
 
 
 
+    # ==================================
+    # MONITOR BUFFER
+    # ==================================
+
     try:
 
         while True:
 
-            # Obtener última muestra
-
-            last = acquisition_service.get_last()
+            sample = acquisition_service.get_last()
 
 
-            if last:
+            if sample:
 
-                print("\n--- ULTIMA MUESTRA ---")
+                print("")
+                print("==============================")
+                print(" ULTIMA MUESTRA ")
+                print("==============================")
 
-
-                print(last)
-
-
-
-            else:
-
-                print(
-                    "Esperando primera muestra..."
-                )
+                print(sample)
 
 
-            time.sleep(1)
+
+            time.sleep(2)
 
 
 
     except KeyboardInterrupt:
 
 
-        print("\nDeteniendo adquisición...")
+        print("")
+        print("Deteniendo adquisición...")
 
 
         acquisition_thread.stop()
-
-
-        print("Test finalizado")
 
 
 
