@@ -2,6 +2,7 @@
 
 import time
 
+
 from database.init_database import create_database
 
 from services.acquisition_service import AcquisitionService
@@ -10,11 +11,77 @@ from core.acquisition_thread import AcquisitionThread
 
 
 
+def print_sample(sample):
+
+    print("")
+    print("==============================")
+    print(" ACQUISITION SAMPLE ")
+    print("==============================")
+
+
+    if sample.rf_power:
+        print(
+            f"RF Power: {sample.rf_power.value}"
+        )
+
+
+    if sample.swr:
+        print(
+            f"SWR: {sample.swr.value}"
+        )
+
+
+    if sample.alc:
+        print(
+            f"ALC: {sample.alc.value}"
+        )
+
+
+    if sample.pa_dc_volts:
+        print(
+            f"PA DC Volts: {sample.pa_dc_volts.value}"
+        )
+
+
+    if sample.pa_dc_amps:
+        print(
+            f"PA DC Amps: {sample.pa_dc_amps.value}"
+        )
+
+
+    if sample.pa_temperature:
+        print(
+            f"PA Temperature: {sample.pa_temperature.value}"
+        )
+
+
+    if sample.supply_dc_volts:
+        print(
+            f"Supply DC Volts: {sample.supply_dc_volts.value}"
+        )
+
+
+    print("------------------------------")
+
+    print(
+        f"Carrier: {sample.carrier}"
+    )
+
+    print(
+        f"Auto Carrier: {sample.auto_carrier}"
+    )
+
+    print(
+        f"Fail: {sample.fail}"
+    )
+
+
+
 def main():
 
     print("")
     print("==============================")
-    print(" TEST ACQUISITION SYSTEM ")
+    print(" CROWN ACQUISITION TEST ")
     print("==============================")
     print("")
 
@@ -23,7 +90,7 @@ def main():
     # DATABASE
     # ==================================
 
-    print("Inicializando base de datos...")
+    print("Initializing database...")
 
     create_database()
 
@@ -33,28 +100,27 @@ def main():
     # ACQUISITION SERVICE
     # ==================================
 
-    print("Creando AcquisitionService...")
+    print("Creating AcquisitionService...")
 
     acquisition_service = AcquisitionService()
 
 
 
     # ==================================
-    # HARDWARE INITIALIZE
+    # HARDWARE
     # ==================================
 
-    print("Inicializando ADS1256...")
+    print("Initializing hardware...")
 
     acquisition_service.initialize()
 
 
 
     # ==================================
-    # THREAD
+    # ACQUISITION THREAD
     # ==================================
 
-    print("Iniciando hilo de adquisición...")
-
+    print("Starting acquisition thread...")
 
     acquisition_thread = AcquisitionThread(
         acquisition_service,
@@ -66,9 +132,12 @@ def main():
 
 
 
-    # ==================================
-    # MONITOR BUFFER
-    # ==================================
+    print("")
+    print("Acquisition running...")
+    print("Press CTRL+C to stop")
+    print("")
+
+
 
     try:
 
@@ -79,13 +148,9 @@ def main():
 
             if sample:
 
-                print("")
-                print("==============================")
-                print(" ULTIMA MUESTRA ")
-                print("==============================")
-
-                print(sample)
-
+                print_sample(
+                    sample
+                )
 
 
             time.sleep(2)
@@ -94,12 +159,16 @@ def main():
 
     except KeyboardInterrupt:
 
-
         print("")
-        print("Deteniendo adquisición...")
+        print("Stopping acquisition...")
 
+
+
+    finally:
 
         acquisition_thread.stop()
+
+        print("Acquisition stopped")
 
 
 

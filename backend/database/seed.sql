@@ -6,7 +6,7 @@
 
 
 -- =====================================================
--- CONFIGURACION INICIAL DEL SISTEMA
+-- INITIAL SYSTEM CONFIGURATION
 -- =====================================================
 
 INSERT INTO system_config
@@ -25,15 +25,16 @@ VALUES
     5475,
     1,
     'CROWN_MONITOR',
-    'Equipo pendiente de configuracion inicial'
+    'Device pending initial configuration'
 );
 
 
 
 -- =====================================================
--- PARAMETROS INICIALES DE MEDICION
+-- INITIAL MEASUREMENT PARAMETERS
+-- Factory default limits are used until configuration
+-- is completed.
 -- =====================================================
-
 
 INSERT INTO parameters
 (
@@ -43,6 +44,11 @@ INSERT INTO parameters
     unit,
     gain,
     offset,
+    ideal_value,
+    warning_low,
+    warning_high,
+    alarm_low,
+    alarm_high,
     description
 )
 VALUES
@@ -54,7 +60,12 @@ VALUES
     'W',
     1,
     0,
-    'Potencia de salida RF'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'RF output power'
 ),
 
 
@@ -62,10 +73,15 @@ VALUES
     'swr',
     'SWR',
     '0x20',
-    'ratio',
+    '',
     1,
     0,
-    'Relacion de onda estacionaria'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Standing wave ratio'
 ),
 
 
@@ -73,10 +89,15 @@ VALUES
     'alc',
     'ALC',
     '0x30',
-    '%',
+    'V',
     1,
     0,
-    'Control automatico de nivel'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Automatic level control voltage'
 ),
 
 
@@ -87,7 +108,12 @@ VALUES
     'V',
     1,
     0,
-    'Voltaje DC del amplificador'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Power amplifier DC voltage'
 ),
 
 
@@ -98,7 +124,12 @@ VALUES
     'A',
     1,
     0,
-    'Corriente DC del amplificador'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Power amplifier DC current'
 ),
 
 
@@ -109,7 +140,12 @@ VALUES
     'C',
     1,
     0,
-    'Temperatura del amplificador'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Power amplifier temperature'
 ),
 
 
@@ -120,14 +156,19 @@ VALUES
     'V',
     1,
     0,
-    'Voltaje principal de alimentacion'
+    0,
+    -999999,
+    999999,
+    -999999,
+    999999,
+    'Main supply voltage'
 );
 
 
 
 -- =====================================================
--- ESTACION INICIAL
--- SE COMPLETA EN LA CONFIGURACION
+-- INITIAL STATION INFORMATION
+-- Completed during system configuration
 -- =====================================================
 
 INSERT INTO station
@@ -136,14 +177,14 @@ INSERT INTO station
 )
 VALUES
 (
-    'Estacion pendiente de configuracion'
+    'Station information pending configuration'
 );
 
 
 
 -- =====================================================
--- TORRE Y ANTENA INICIAL
--- SE COMPLETA EN LA CONFIGURACION
+-- INITIAL TOWER AND ANTENNA INFORMATION
+-- Completed during system configuration
 -- =====================================================
 
 INSERT INTO tower_antenna_info
@@ -152,14 +193,14 @@ INSERT INTO tower_antenna_info
 )
 VALUES
 (
-    'Informacion de torre y antena pendiente de configuracion'
+    'Tower and antenna information pending configuration'
 );
 
 
 
 -- =====================================================
--- CONFIGURACION INICIAL DE CORREO
--- DESACTIVADA
+-- INITIAL EMAIL CONFIGURATION
+-- Disabled by default
 -- =====================================================
 
 INSERT INTO email_config

@@ -5,7 +5,7 @@ import os
 
 
 # =====================================================
-# Rutas
+# Paths
 # =====================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,22 +28,22 @@ SEED_FILE = os.path.join(
 
 
 # =====================================================
-# Crear base de datos
+# Create Database
 # =====================================================
 
 def create_database():
 
-    # Si existe, no la recrea
+    # If database exists, do not recreate it
     if os.path.exists(DATABASE_FILE):
 
-        print("La base de datos ya existe:")
+        print("Database already exists:")
         print(DATABASE_FILE)
 
         return
 
 
 
-    print("Creando base de datos...")
+    print("Creating database...")
 
 
     connection = sqlite3.connect(
@@ -55,14 +55,14 @@ def create_database():
 
 
 
-    # Activar llaves foráneas
+    # Enable foreign key support
     cursor.execute(
         "PRAGMA foreign_keys = ON;"
     )
 
 
 
-    # Ejecutar schema.sql
+    # Execute schema.sql
 
     with open(
         SCHEMA_FILE,
@@ -76,11 +76,11 @@ def create_database():
 
 
 
-    print("Tablas creadas correctamente")
+    print("Database tables created successfully")
 
 
 
-    # Ejecutar seed.sql
+    # Execute seed.sql
 
     with open(
         SEED_FILE,
@@ -94,7 +94,7 @@ def create_database():
 
 
 
-    print("Datos iniciales cargados correctamente")
+    print("Initial data loaded successfully")
 
 
 
@@ -106,14 +106,14 @@ def create_database():
 
     print("")
     print("================================")
-    print("CROWN DATABASE LISTA")
+    print("CROWN DATABASE READY")
     print("================================")
     print(DATABASE_FILE)
 
 
 
 # =====================================================
-# Programa principal
+# Main Program
 # =====================================================
 
 if __name__ == "__main__":

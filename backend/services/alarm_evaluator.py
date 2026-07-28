@@ -3,49 +3,43 @@ from models.status import Status
 
 class AlarmEvaluator:
     """
-    Evalúa el estado de un parámetro
-    según sus límites configurados.
+    Evaluates the status of a parameter
+    according to its configured limits.
     """
 
 
     def evaluate(self, value, parameter_config):
         """
-        Recibe:
+        Evaluate parameter status.
 
-        value:
-            Valor real calculado del parámetro.
-
-        parameter_config:
-            Configuración obtenida desde ParameterService.
-
-        Retorna:
-
+        Returns:
             Status.NORMAL
             Status.WARNING
             Status.ALARM
         """
 
 
-        alarm_low = parameter_config["alarm_low"]
-        alarm_high = parameter_config["alarm_high"]
+        alarm_low = parameter_config.get("alarm_low")
+        alarm_high = parameter_config.get("alarm_high")
 
-        warning_low = parameter_config["warning_low"]
-        warning_high = parameter_config["warning_high"]
-
+        warning_low = parameter_config.get("warning_low")
+        warning_high = parameter_config.get("warning_high")
 
 
         # ==============================
-        # ALARMAS
+        # ALARMS
         # ==============================
 
-        if value <= alarm_low:
+        if alarm_low is not None:
 
-            return Status.ALARM
+            if value <= alarm_low:
+                return Status.ALARM
 
 
-        if value >= alarm_high:
+        if alarm_high is not None:
 
-            return Status.ALARM
+            if value >= alarm_high:
+                return Status.ALARM
 
 
 
@@ -53,14 +47,16 @@ class AlarmEvaluator:
         # WARNINGS
         # ==============================
 
-        if value <= warning_low:
+        if warning_low is not None:
 
-            return Status.WARNING
+            if value <= warning_low:
+                return Status.WARNING
 
 
-        if value >= warning_high:
+        if warning_high is not None:
 
-            return Status.WARNING
+            if value >= warning_high:
+                return Status.WARNING
 
 
 
